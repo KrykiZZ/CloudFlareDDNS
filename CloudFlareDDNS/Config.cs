@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 
 namespace CloudFlareDDNS
@@ -7,28 +8,29 @@ namespace CloudFlareDDNS
     public class Config
     {
         [JsonProperty("api_endpoint")]
-        public readonly string apiEndpoint = "https://api.cloudflare.com/client/v4/";
+        public readonly string apiEndpoint;
 
         [JsonProperty("email")]
-        public readonly string email = "admin@example.com";
+        public readonly string email;
 
         [JsonProperty("api_key")]
-        public readonly string apiKey = "m3m3";
+        public readonly string apiKey;
 
         [JsonProperty("zone_id")]
-        public readonly string zoneId = "an0th3rm3m3";
+        public readonly string zoneId;
 
         [JsonProperty("cooldown")]
-        public readonly int cooldown = 30;
+        public readonly int cooldown;
 
         [JsonProperty("log_to_file")]
-        public readonly bool logToFile = true;
+        public readonly bool logToFile;
 
         [JsonProperty("colored_logging")]
-        public readonly bool coloredLogging = true;
+        public readonly bool coloredLogging;
 
         [JsonProperty("records")]
-        public readonly List<string> records = new List<string>() { "example.com" };
+        [DefaultValue(default(List<string>))]
+        public readonly List<string> records;
     }
 
     public class ConfigReader
