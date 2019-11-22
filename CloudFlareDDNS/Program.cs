@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -24,7 +25,8 @@ namespace CloudFlareDDNS
                 "|   )|  |  |  \\   |  |  (   ) |  \\ |  | |  |                 \n" +
                 "'--' `--|  '   `-' `-'   `-'`-'   ``--`-'  `-                \n" +
                 "        ;                                                    \n" +
-                "     `-'                                                     \n");
+                "     `-'                                                     \n" +
+                $"\nVersion: {Assembly.GetExecutingAssembly().GetName().Version.ToString()}\n");
             Console.ResetColor();
 
             List<Config> configs = ConfigReader.ReadAll();
