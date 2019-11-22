@@ -7,17 +7,20 @@ namespace CloudFlareDDNS
 {
     public class Logger
     {
+        private readonly string name;
         private readonly bool logToFile;
         private readonly bool coloredLogging;
-        public Logger(bool logToFile, bool coloredLogging)
+
+        public Logger(string name, bool logToFile, bool coloredLogging)
         {
+            this.name = name;
             this.logToFile = logToFile;
             this.coloredLogging = coloredLogging;
         }
 
         private void Log(string level, ConsoleColor color, string message)
         {
-            message = $"[{DateTime.Now.ToString("yyyy.MM.dd HH:mm:ss")}] [{level}] {message}";
+            message = $"[{DateTime.Now.ToString("yyyy.MM.dd HH:mm:ss")}] [{level}] [{name}] {message}";
 
             if (coloredLogging)
                 Console.ForegroundColor = color;
@@ -25,7 +28,10 @@ namespace CloudFlareDDNS
             Console.ResetColor();
 
             if (logToFile)
-                File.AppendAllText("CloudFlareDDNS.log", message);
+            {
+                if (!Directory.Exists("logs")) Directory.CreateDirectory("logs");
+                File.AppendAllText(Path.Join("logs", $"{name}.log"), message + "\n");
+            }
         }
 
         public void Info(string message) => Log("INFO", ConsoleColor.Green, message);

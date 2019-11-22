@@ -82,7 +82,7 @@ namespace CloudFlareDDNS
 
         public async Task<bool> UpdateRecord(string zoneId, string recordId, string newName, string newContent, int newTtl, bool newProxied)
         {
-            var jsonContent = JsonConvert.SerializeObject(new
+            string jsonContent = JsonConvert.SerializeObject(new
             {
                 type = "A",
                 name = newName,

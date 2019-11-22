@@ -11,18 +11,6 @@ namespace CloudFlareDDNS
         static void Main(string[] args) => new Program().MainAsync().GetAwaiter().GetResult();
         public async Task MainAsync()
         {
-            Config config = ConfigReader.Read();
-            if (config == null)
-            {
-                Console.WriteLine("[!] config.json not found. A default one has been generated.");
-                Console.WriteLine("[!] Please edit your config.json and run the service again.");
-
-                Environment.Exit(0);
-            }
-
-            Logger logger = new Logger(config.logToFile, config.coloredLogging);
-            CloudFlareAPI api = new CloudFlareAPI(config.apiEndpoint, config.email, config.apiKey, logger);
-
             Console.ForegroundColor = ConsoleColor.Blue;
             Console.WriteLine(
                 " .--..             . .---..              .--. .--. .   . .-. \n" +
@@ -39,30 +27,26 @@ namespace CloudFlareDDNS
                 "     `-'                                                     \n");
             Console.ResetColor();
 
-            logger.Info($"Cooldown: {config.cooldown} seconds");
-            logger.Info($"Records ({config.records.Count}): {string.Join(", ", config.records)}");
-
-            while (true)
+            List<Config> configs = ConfigReader.ReadAll();
+            if (configs == null || configs.Count == 0)
             {
-                List<DNSRecord> records = await api.GetRecords(config.zoneId);
-                if (records != null)
-                {
-                    foreach (DNSRecord record in records)
-                    {
-                        if (config.records.Contains(record.name))
-                        {
-                            string ip = new WebClient().DownloadString("https://ipv4.icanhazip.com/").Trim();
-                            if (record.content != ip)
-                            {
-                                await api.UpdateRecord(config.zoneId, record.id, record.name, ip, record.ttl, record.proxied);
-                                logger.Info($"Updated {record.name} | {record.content} -> {ip} | TTL: {record.ttl} | Proxied: {record.proxied}");
-                            }
-                        }
-                    }
-                }
+                Console.WriteLine("[!] Domain configs not found. A default one has been generated.");
+                Console.WriteLine("[!] Please edit your domain.com.json and run the service again.");
+                Console.WriteLine("[?] Note: You can name it to whatever you want (used only for logging).");
 
-                Thread.Sleep(TimeSpan.FromSeconds(config.cooldown));
+                Environment.Exit(0);
             }
+
+            List<Task> tasks = new List<Task>();
+            foreach (Config config in configs)
+            {
+                Logger logger = new Logger(config.Name, config.LogToFile, config.ColoredLogging);
+                CloudFlareAPI api = new CloudFlareAPI(config.ApiEndpoint, config.Email, config.ApiKey, logger);
+
+                tasks.Add(new CloudFlareDDNS(api, config, logger).Start());
+            }
+
+            await Task.WhenAll(tasks);
         }
     }
 }
