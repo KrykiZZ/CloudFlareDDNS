@@ -3,7 +3,7 @@
 A script designed to dynamically update Cloudflare DNS records. 
 
 Our goals:
-* Simple. This tool is intended to be easily configurable, so anyone could use it. It uses a straight forward config format and auto-generates an example configuration file on start.
+* Simple. This tool is intended to be easily configurable, so anyone could use it. It utilizes a straight forward config format and auto-generates an example configuration file on start.
 * Reliable. Very resistant to heavy system load and always works like intended. We made sure that everything will work correctly in every case possible.
 * Open-source. Our view is that software with open source code is awesome! This tool is licensed under the terms of the MIT license, so other developers could fork it or contribute to this repository.
 
