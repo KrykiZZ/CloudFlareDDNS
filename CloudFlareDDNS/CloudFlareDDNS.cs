@@ -43,7 +43,7 @@ namespace CloudFlareDDNS
                     }
                 }
 
-                Thread.Sleep(TimeSpan.FromSeconds(config.Cooldown));
+                await Task.Delay(TimeSpan.FromSeconds(config.Cooldown));
             }
         }
     }

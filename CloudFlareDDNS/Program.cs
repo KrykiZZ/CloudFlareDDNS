@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
+using System.Net.Http;
 using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace CloudFlareDDNS
 {
     class Program
     {
-        static void Main(string[] args) => new Program().MainAsync().GetAwaiter().GetResult();
-        public async Task MainAsync()
+        private static HttpClient _http;
+
+        private static async Task Main()
         {
             Console.ForegroundColor = ConsoleColor.Blue;
             Console.WriteLine(
@@ -39,11 +39,13 @@ namespace CloudFlareDDNS
                 Environment.Exit(0);
             }
 
+            _http = new HttpClient();
+
             List<Task> tasks = new List<Task>();
             foreach (Config config in configs)
             {
                 Logger logger = new Logger(config.Name, config.LogToFile, config.ColoredLogging);
-                CloudFlareAPI api = new CloudFlareAPI(config.ApiEndpoint, config.Email, config.ApiKey, logger);
+                CloudFlareAPI api = new CloudFlareAPI(_http, config.ApiEndpoint, config.Email, config.ApiKey, logger);
 
                 tasks.Add(new CloudFlareDDNS(api, config, logger).Start());
             }
